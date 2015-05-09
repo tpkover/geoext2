@@ -71,7 +71,7 @@ Ext.application({
                             // add a WMS legend to each node created
                             attr.component = {
                                 xtype: "gx_wmslegend",
-                                layerRecord: mapPanel.layers.getByLayer(attr.layer),
+                                layerRecord: mapPanel.layers.getRecordByLayer(attr.layer),
                                 showTitle: false,
                                 // custom class for css positioning
                                 // see tree-legend.html

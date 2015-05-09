@@ -27,7 +27,7 @@ Ext.define('GeoExt.tree.Column', {
     initComponent: function() {
         var me = this;
 
-        me.callParent();
+        me.callParent(arguments);
 
         var parentRenderer = me.renderer;
 

@@ -81,7 +81,7 @@ Ext.define('GeoExt.panel.Map', {
      * provided, it should consist of a x & y coordinate seperated by a
      * comma.
      *
-     * @cfg {OpenLayers.LonLat/Number[]/String} center
+     * @cfg {Number[]/String} center
      */
     center: null,
 
@@ -97,7 +97,7 @@ Ext.define('GeoExt.panel.Map', {
      * provided.  If an array, the first four items should be minx, miny,
      * maxx, maxy.
      *
-     * @cfg {OpenLayers.Bounds/Number[]} extent
+     * @cfg {Number[]} extent
      */
     extent: null,
 
@@ -136,12 +136,12 @@ Ext.define('GeoExt.panel.Map', {
      * A configured map will be available after construction through the
      * {@link GeoExt.panel.Map#property-map} property.
      *
-     * @cfg {OpenLayers.Map/Object} map
+     * @cfg {ol.Map/Object} map
      */
     /**
      * A map or map configuration.
      *
-     * @property {OpenLayers.Map/Object} map
+     * @property {ol.Map/Object} map
      */
     map: null,
 
@@ -150,12 +150,12 @@ Ext.define('GeoExt.panel.Map', {
      * typically a layout manager must be specified through the layout
      * configuration option.
      *
-     * @cfg {OpenLayers.Map/Object} layout
+     * @cfg {ol.Map/Object} layout
      */
     /**
      * A layout or layout configuration.
      *
-     * @property {OpenLayers.Map/Object} layout
+     * @property {ol.Map/Object} layout
      */
     layout: 'fit',
 
@@ -163,7 +163,7 @@ Ext.define('GeoExt.panel.Map', {
      * The layers provided here will be added to this Map's
      * {@link #property-map}.
      *
-     * @cfg {GeoExt.data.LayerStore/OpenLayers.Layer[]} layers
+     * @cfg {GeoExt.data.LayerStore/ol.Layer[]} layers
      */
     /**
      * A store containing {@link GeoExt.data.LayerModel gx_layer-model}
@@ -190,7 +190,7 @@ Ext.define('GeoExt.panel.Map', {
     ],
 
     /**
-     * Whether we already rendered an OpenLayers.Map in this panel. Will be
+     * Whether we already rendered an ol.Map in this panel. Will be
      * updated in #onResize, after the first rendering happened.
      *
      * @property {Boolean} mapRendered
@@ -215,8 +215,8 @@ Ext.define('GeoExt.panel.Map', {
      * @private
      */
     initComponent: function(){
-        if(!(this.map instanceof OpenLayers.Map)) {
-            this.map = new OpenLayers.Map(
+        if(!(this.map instanceof ol.Map)) {
+            this.map = new ol.Map(
                 Ext.applyIf(this.map || {}, {
                     allOverlays: true,
                     fallThrough: true
@@ -224,28 +224,28 @@ Ext.define('GeoExt.panel.Map', {
             );
         }
 
-        if (this.map.fallThrough !== true) {
-            this.warnMapFallThrough();
-        }
+        // if (this.map.fallThrough !== true) {
+        //    this.warnMapFallThrough();
+        //}
 
         var layers  = this.layers;
         if(!layers || layers instanceof Array) {
             this.layers = Ext.create('GeoExt.data.LayerStore', {
                 layers: layers,
-                map: this.map.layers.length > 0 ? this.map : null
+                map: this.map.getLayers().length > 0 ? this.map : null
             });
         }
 
-        if (Ext.isString(this.center)) {
-            this.center = OpenLayers.LonLat.fromString(this.center);
-        } else if(Ext.isArray(this.center)) {
-            this.center = new OpenLayers.LonLat(this.center[0], this.center[1]);
-        }
-        if (Ext.isString(this.extent)) {
-            this.extent = OpenLayers.Bounds.fromString(this.extent);
-        } else if(Ext.isArray(this.extent)) {
-            this.extent = OpenLayers.Bounds.fromArray(this.extent);
-        }
+        //if (Ext.isString(this.center)) {
+        //    this.center = OpenLayers.LonLat.fromString(this.center);
+        //} else if(Ext.isArray(this.center)) {
+        //    this.center = new OpenLayers.LonLat(this.center[0], this.center[1]);
+        //}
+        //if (Ext.isString(this.extent)) {
+        //    this.extent = OpenLayers.Bounds.fromString(this.extent);
+        //} else if(Ext.isArray(this.extent)) {
+        //    this.extent = OpenLayers.Bounds.fromArray(this.extent);
+        //}
 
         this.callParent(arguments);
 
@@ -302,13 +302,17 @@ Ext.define('GeoExt.panel.Map', {
          */
 
         // bind various listeners to the corresponding OpenLayers.Map-events
-        this.map.events.on({
-            "moveend": this.onMoveend,
-            "changelayer": this.onChangelayer,
-            "addlayer": this.onAddlayer,
-            "removelayer": this.onRemovelayer,
-            scope: this
-        });
+        //this.map.events.on({
+        //    "moveend": this.onMoveend,
+        //    "changelayer": this.onChangelayer,
+        //    "addlayer": this.onAddlayer,
+        //    "removelayer": this.onRemovelayer,
+        //    scope: this
+        //});
+        this.map.on('moveend', this.onMoveend, this);
+        this.map.on('changelayer', this.onChangelayer, this);
+        this.map.on('addlayer', this.onAddlayer, this);
+        this.map.on('removelayer', this.onRemovelayer, this);
     },
 
     /**
@@ -393,12 +397,14 @@ Ext.define('GeoExt.panel.Map', {
         var map = this.map;
         if(!this.mapRendered && this.body.dom !== map.div) {
             // the map has not been rendered yet
-            map.render(this.body.dom);
+           // map.render(this.body.dom);
+            map.setTarget(this.body.dom);
+            map.render();
             this.mapRendered = true;
 
             this.layers.bindMap(map);
 
-            if (map.layers.length > 0) {
+            if (map.getLayers().length > 0) {
                 this.setInitialExtent();
             } else {
                 this.layers.on("add", this.setInitialExtent, this,
@@ -420,11 +426,12 @@ Ext.define('GeoExt.panel.Map', {
             if (this.center || this.zoom ) {
                 // center and/or zoom?
                 map.setCenter(this.center, this.zoom);
-            } else if (this.extent instanceof OpenLayers.Bounds) {
+            } else if (this.extent instanceof Array) {
                 // extent
-                map.zoomToExtent(this.extent, true);
+                map.fitExtent(this.extent, this.map.getSize());
             }else {
-                map.zoomToMaxExtent();
+                //TODO: TK
+                //map.zoomToMaxExtent();
             }
         }
     },
@@ -460,26 +467,26 @@ Ext.define('GeoExt.panel.Map', {
         // between the time the event occurred and the time
         // getState is called
         if(!map) {
-            return;
+            return null;
         }
 
         // record location and zoom level
-        var center = map.getCenter();
+        var center = map.getView().getCenter();
         // map may not be centered yet, because it may still have zero
         // dimensions or no layers
         center && Ext.applyIf(state, {
-            "x": center.lon,
-            "y": center.lat,
-            "zoom": map.getZoom()
+            "x": center[0],
+            "y": center[1],
+            "zoom": map.getView().getZoom()
         });
 
         me.layers.each(function(modelInstance) {
             layer = modelInstance.getLayer();
-            layerId = this.prettyStateKeys
+            var layerId = this.prettyStateKeys
                    ? modelInstance.get('title')
                    : modelInstance.get('id');
             state = me.addPropertyToState(state, "visibility_" + layerId,
-                layer.getVisibility());
+                layer.getVisible().toString());
             state = me.addPropertyToState(state, "opacity_" + layerId,
                 (layer.opacity === null) ? 1 : layer.opacity);
         }, me);
@@ -499,7 +506,7 @@ Ext.define('GeoExt.panel.Map', {
         // if we get strings for state.x, state.y or state.zoom
         // OpenLayers will take care of converting them to the
         // appropriate types so we don't bother with that
-        me.center = new OpenLayers.LonLat(state.x, state.y);
+        me.center = [state.x, state.y];
         me.zoom = state.zoom;
 
         // set layer visibility and opacity
@@ -511,12 +518,13 @@ Ext.define('GeoExt.panel.Map', {
             if(visibility !== undefined) {
                 // convert to boolean
                 visibility = (/^true$/i).test(visibility);
-                if(layer.isBaseLayer) {
-                    if(visibility) {
-                        map.setBaseLayer(layer);
-                    }
-                } else {
-                    layer.setVisibility(visibility);
+                //if(layer.isBaseLayer) {
+                //    if(visibility) {
+                //        map.setBaseLayer(layer);
+                //    }
+                //} else {
+                if (!layer.isBaseLayer) {
+                    layer.setVisible(visibility);
                 }
             }
             opacity = state["opacity_" + layerId];
@@ -556,7 +564,7 @@ Ext.define('GeoExt.panel.Map', {
         // if the map panel was passed a map instance, this map instance
         // is under the user's responsibility
         if(!this.initialConfig.map ||
-           !(this.initialConfig.map instanceof OpenLayers.Map)) {
+           !(this.initialConfig.map instanceof ol.Map)) {
             // we created the map, we destroy it
             if(this.map && this.map.destroy) {
                 this.map.destroy();

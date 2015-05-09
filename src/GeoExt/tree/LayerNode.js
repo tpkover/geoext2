@@ -48,7 +48,8 @@ Ext.define('GeoExt.tree.LayerNode', {
     alias: 'plugin.gx_layer',
     requires: [
         'GeoExt.Version',
-        'GeoExt.tree.Util'
+        'GeoExt.tree.Util',
+        'Ext.Array'
     ],
     /**
      * The init method is invoked after initComponent method has been run for
@@ -62,7 +63,7 @@ Ext.define('GeoExt.tree.LayerNode', {
         this.target = target;
         var layer = target.get('layer');
 
-        target.set('checked', layer.getVisibility());
+        target.set('checked', layer.getVisible());
         if (!target.get('checkedGroup') && layer.isBaseLayer) {
             target.set('checkedGroup', 'gx_baselayer');
         }
@@ -76,13 +77,11 @@ Ext.define('GeoExt.tree.LayerNode', {
 
         target.on('afteredit', this.onAfterEdit, this);
 
-        layer.events.on({
-            'visibilitychanged': this.onLayerVisibilityChanged,
-            scope: this
-        });
+        layer.on('visibilitychanged', this.onLayerVisibilityChanged, this);
 
         if (!layer.alwaysInRange && layer.map) {
-            layer.map.events.register('moveend', this, this.onMapMoveend);
+            //layer.map.events.register('moveend', this, this.onMapMoveend);
+            layer.map.on('moveend', this.onMapMoveend, this);
         }
 
         GeoExt.tree.Util.enforceOneLayerVisible(this.target);
@@ -96,7 +95,7 @@ Ext.define('GeoExt.tree.LayerNode', {
      * @private
      */
     onAfterEdit: function(node, modifiedFields) {
-        var me = this;
+        //var me = this;
 
         if(~Ext.Array.indexOf(modifiedFields, 'checked')) {
             GeoExt.tree.Util.updateLayerVisibilityByNode(this.target, this.target.get('checked'));
@@ -110,7 +109,7 @@ Ext.define('GeoExt.tree.LayerNode', {
      */
     onLayerVisibilityChanged: function() {
         if(!this._visibilityChanging) {
-            this.target.set('checked', this.target.get('layer').getVisibility());
+            this.target.set('checked', this.target.get('layer').getVisible());
         }
     },
 
@@ -134,17 +133,18 @@ Ext.define('GeoExt.tree.LayerNode', {
         var node = this.target,
             checked = this.target.get('checked');
 
-        if(checked != node.get('layer').getVisibility()) {
+        if(checked != node.get('layer').getVisible()) {
             node._visibilityChanging = true;
             var layer = node.get('layer');
             if(checked && layer.isBaseLayer && layer.map) {
-                layer.map.setBaseLayer(layer);
+                //layer.map.setBaseLayer(layer);
+                layer.map.baseLayer = layer;
             } else if(!checked && layer.isBaseLayer && layer.map &&
-                      layer.map.baseLayer && layer.id == layer.map.baseLayer.id) {
+                      layer.map.baseLayer && layer == layer.map.baseLayer) {
                 // Must prevent the unchecking of radio buttons
-                node.set('checked', layer.getVisibility());
+                node.set('checked', layer.getVisible());
             } else {
-                layer.setVisibility(checked);
+                layer.setVisible(checked);
             }
             delete node._visibilityChanging;
         }

@@ -41,13 +41,13 @@ Ext.define('GeoExt.tree.Panel', {
             me.columns = [{
                 xtype    : 'gx_treecolumn',
                 text     : 'Name',
-                width    : Ext.isIE6 ? null : 10000,
+                flex     : 1,
                 dataIndex: me.displayField         
             }];
         }
         // bind checkchange for tree nodes to steer visibility of the layers
         me.on('checkchange', GeoExt.tree.Util.updateLayerVisibilityByNode);
 
-        me.callParent();
+        me.callParent(arguments);
     }
 });

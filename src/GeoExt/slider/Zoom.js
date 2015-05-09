@@ -273,9 +273,9 @@ Ext.define('GeoExt.slider.Zoom', {
     update: function() {
         if(this.rendered && this.map && !this.zooming) {
             this.updating = true;
-            this.setValue(this.map.getZoom());
+            this.setValue(this.map.getView().getZoom());
             this.updating = false;
         }
-        this.zooming = false;
+        this.zooming = false;S
     }
 });

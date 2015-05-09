@@ -174,11 +174,11 @@
                 renderTo: "mappanel",
                 height: 400,
                 width: 600,
-                layers: [new OpenLayers.Layer()],
+                layers: [new ol.Layer()],
                 zoom: 4
             });
             
-            t.eq(panel.map.zoom, 4, "zoom correctly set");
+            t.eq(panel.map.getView().getZoom(), 4, "zoom correctly set");
             
             panel.destroy();
         }
@@ -801,9 +801,9 @@
              // - test aftermapmove
              map.pan(1, 1, {animate:false, dragging:false});
              // - test afterlayervisibilitychange
-             newLayer.setVisibility(false);
-             // - test afterlayerorderchange
-             map.raiseLayer(layer, 1);
+             newLayer.setVisible(false);
+             //// - test afterlayerorderchange
+             //map.raiseLayer(layer, 1);
              // - test afterlayernamechange
              layer.setName('Humpty-Dumpty');
              // - test afterlayeropacitychange

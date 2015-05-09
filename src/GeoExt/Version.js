@@ -11,7 +11,7 @@
         patch = 4,
         label = 'dev',
         environment = [],
-        extVersions = Ext.versions.extjs,
+        extVersions = Ext.getVersion('ext'),
         isExt5 = false,
         isExt4 = false,
         v = '';
@@ -27,7 +27,7 @@
         isExt5 = extVersions.major === 5;
     }
     if ( window.OpenLayers ) {
-        environment.push('OpenLayers: ' + OpenLayers.VERSION_NUMBER);
+        environment.push('OpenLayers: 3.4.0'/* + OpenLayers.VERSION_NUMBER*/);
     }
     environment.push('GeoExt: ' + v);
 
@@ -37,6 +37,8 @@
      * libraries ExtJS and OpenLayers.
      */
     Ext.define('GeoExt.Version', {
+        requires: [
+        ],
         singleton: true,
 
         /**

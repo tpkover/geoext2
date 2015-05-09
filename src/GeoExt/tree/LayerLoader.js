@@ -39,7 +39,8 @@
 Ext.define('GeoExt.tree.LayerLoader', {
     extend: 'Ext.util.Observable',
     requires: [
-        'GeoExt.tree.LayerNode'
+        'GeoExt.tree.LayerNode',
+        'Ext.Array'
     ],
 
     /**
@@ -152,7 +153,7 @@ Ext.define('GeoExt.tree.LayerLoader', {
         if (!this._reordering) {
             layerRecords = Ext.isArray(layerRecords) ?
                 layerRecords : [layerRecords];
-            Ext.each(layerRecords, function(layerRecord){
+            Ext.Array.each(layerRecords, function(layerRecord){
                 me.removeLayerNode(node, layerRecord);
             });
         }
@@ -173,9 +174,11 @@ Ext.define('GeoExt.tree.LayerLoader', {
         if (this.filter(layerRecord) === true) {
             var layer = layerRecord.getLayer();
             var child = this.createNode({
-                plugins: [{
+                plugins: [/*{
                     ptype: 'gx_layer'
-                }],
+                }*/
+                    new GeoExt.tree.LayerNode()
+                ],
                 layer: layer,
                 text: layer.name,
                 listeners: {
@@ -226,7 +229,7 @@ Ext.define('GeoExt.tree.LayerLoader', {
      */
     onChildMove: function(node, oldParent, newParent, index) {
         var me = this,
-            record = me.store.getByLayer(node.get('layer')),
+            record = me.store.getRecordByLayer(node.get('layer')),
             container = newParent.get('container'),
             parentLoader = container.loader;
 

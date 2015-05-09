@@ -148,13 +148,10 @@ Ext.define('GeoExt.data.LayerTreeModel',{
             var plugins = me.get('plugins');
 
             if (plugins) {
-                var plugin, instance;
+                var plugin;
                 for (var i=0, ii=plugins.length; i<ii; ++i) {
                     plugin = plugins[i];
-                    instance = Ext.PluginMgr.create(Ext.isString(plugin) ? {
-                        ptype: plugin
-                    } : plugin);
-                    instance.init(me);
+                    plugin.init(me);
                 }
             }
         });

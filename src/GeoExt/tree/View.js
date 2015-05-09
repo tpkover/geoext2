@@ -32,7 +32,8 @@ Ext.define('GeoExt.tree.View', {
     extend: 'Ext.tree.View',
     alias: 'widget.gx_treeview',
     requires: [
-        'GeoExt.Version'
+        'GeoExt.Version',
+        'Ext.Array'
     ],
     initComponent : function() {
         var me = this;
@@ -66,7 +67,7 @@ Ext.define('GeoExt.tree.View', {
             records = [records]
         }
 
-        Ext.each(records, function(record, i){
+        Ext.Array.each(records, function(record, i){
             me.onNodeRendered(record)
         })
     },

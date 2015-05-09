@@ -233,7 +233,7 @@ Ext.define('GeoExt.form.field.GeocoderComboBox', {
                 this.map.setCenter(
                     OpenLayers.LonLat.fromArray(value)
                         .transform(this.srs, mapProj),
-                    Math.max(this.map.getZoom(), this.zoom)
+                    Math.max(this.map.getView().getZoom(), this.zoom)
                 );
             }
             rec = rec[0];

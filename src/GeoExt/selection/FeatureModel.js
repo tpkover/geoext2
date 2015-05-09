@@ -357,7 +357,7 @@ Ext.define('GeoExt.selection.FeatureModel', {
         var map = this.selectControl.map;
         var selectionExtent = this.getSelectionExtent();
         var selectionExtentZoom = map.getZoomForExtent(selectionExtent, false);
-        if (selectionExtentZoom > map.getZoom()) {
+        if (selectionExtentZoom > map.getView().getZoom()) {
             map.setCenter(selectionExtent.getCenterLonLat());
         }
         else {
