@@ -29,7 +29,7 @@ Ext.define('GeoExt.data.LayerModel',{
          * Convenience function for creating new layer model instance object
          * using a layer object.
          *
-         * @param {OpenLayers.Layer} layer
+         * @param {ol.Layer} layer
          * @return {GeoExt.data.LayerModel}
          * @static
          */
@@ -51,9 +51,9 @@ Ext.define('GeoExt.data.LayerModel',{
         }
     },
     /**
-     * Returns the {OpenLayers.Layer} layer object used in this model instance.
+     * Returns the {ol.Layer} layer object used in this model instance.
      *
-     * @return {OpenLayers.Layer}
+     * @return {ol.Layer}
      */
     getLayer: function() {
         return this.raw;

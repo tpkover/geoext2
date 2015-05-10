@@ -13,7 +13,8 @@ Ext.define('GeoExt.tree.Util', {
                 var layer = node.get('layer');
                 if(checked && layer.isBaseLayer && layer.map) {
                     //layer.map.setBaseLayer(layer);
-                    layer.map.baseLayer = layer;
+                    //layer.map.baseLayer = layer;
+                    GeoExt.tree.Util.setMapBaseLayer(layer.map, layer);
                 } else if(!checked && layer.isBaseLayer && layer.map &&
                           layer.map.baseLayer && layer == layer.map.baseLayer) {
                     // Must prevent the unchecking of radio buttons
@@ -24,6 +25,14 @@ Ext.define('GeoExt.tree.Util', {
                 delete node._visibilityChanging;
             }
             GeoExt.tree.Util.enforceOneLayerVisible(node);
+        },
+
+        setMapBaseLayer: function(map, newLayer) {
+            if (newLayer != map.baseLayer) {
+                map.baseLayer.setVisible(false);
+                map.baseLayer = newLayer;
+                map.baseLayer.setVisible(true);
+            }
         },
 
         /**
@@ -41,12 +50,13 @@ Ext.define('GeoExt.tree.Util', {
                 var checkedNodes = node.getOwnerTree().getChecked();
                 var checkedCount = 0;
                 // enforce "not more than one visible"
-                Ext.each(checkedNodes, function(n){
+                Ext.Array.each(checkedNodes, function(n){
                     var l = n.data.layer;
                     if(!n.data.hidden && n.data.checkedGroup === group) {
                         checkedCount++;
                         if(l != layer && attributes.checked) {
                             l.setVisible(false);
+                            n.set('checked', false);
                         }
                     }
                 });
