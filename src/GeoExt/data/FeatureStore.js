@@ -155,7 +155,9 @@ Ext.define('GeoExt.data.FeatureStore', {
                 GeoExt.data.FeatureStore.STORE_TO_LAYER;
         }
 
-        var features = layer.features.slice(0);
+       // var features = layer.features.slice(0);
+        var source = layer.getSource();
+        var features = source.getFeatures().slice(0);
         var featureKey = GeoExt.isExt4 ? 'raw' : 'data';
 
         if (initDir & GeoExt.data.FeatureStore.STORE_TO_LAYER) {
@@ -165,17 +167,20 @@ Ext.define('GeoExt.data.FeatureStore', {
         }
 
         if (initDir & GeoExt.data.FeatureStore.LAYER_TO_STORE &&
-                layer.features.length > 0) {
+                features.length > 0) {
             // append a snapshot of the layer's features
             this.loadRawData(features, true);
         }
 
-        this.layer.events.on({
-            'featuresadded': this.onFeaturesAdded,
-            'featuresremoved': this.onFeaturesRemoved,
-            'featuremodified': this.onFeatureModified,
-            scope: this
-        });
+        //this.layer.events.on({
+        //    'featuresadded': this.onFeaturesAdded,
+        //    'featuresremoved': this.onFeaturesRemoved,
+        //    'featuremodified': this.onFeatureModified,
+        //    scope: this
+        //});
+        this.layer.on('featuresadded', this.onFeaturesAdded, this);
+        this.layer.on('featuresremoved', this.onFeaturesRemoved, this);
+        this.layer.on('featuremodified', this.onFeatureModified, this);
         this.on({
             'load': this.onLoad,
             'clear': this.onClear,
@@ -350,7 +355,7 @@ Ext.define('GeoExt.data.FeatureStore', {
                 keysAndValues = record_new.getData();
             } else {
                 var keys = Ext.Object.getKeys(record_new.getFieldsMap());
-                Ext.each(keys, function(key) {
+                Ext.Array.each(keys, function(key) {
                     keysAndValues[key] = record_new.get(key);
                 });
             }
@@ -436,7 +441,7 @@ Ext.define('GeoExt.data.FeatureStore', {
             records = [records];
         }
         if (!me._removing) {
-            Ext.each(records, function(record){
+            Ext.Array.each(records, function(record){
                 var feature = record[featureKey];
                 if (layer.getFeatureById(feature.id) != null) {
                     removeFeatures.push(feature);
@@ -464,9 +469,9 @@ Ext.define('GeoExt.data.FeatureStore', {
         if (!this._updating) {
             var featureKey = GeoExt.isExt4 ? 'raw' : 'data',
                 feature = record[featureKey];
-            if (feature.state !== OpenLayers.State.INSERT) {
-                feature.state = OpenLayers.State.UPDATE;
-            }
+            //if (feature.state !== OpenLayers.State.INSERT) {
+            //    feature.state = OpenLayers.State.UPDATE;
+            //}
             var cont = this.layer.events.triggerEvent('beforefeaturemodified', {
                 feature: feature
             });

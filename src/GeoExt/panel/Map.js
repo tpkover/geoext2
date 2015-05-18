@@ -310,9 +310,9 @@ Ext.define('GeoExt.panel.Map', {
         //    scope: this
         //});
         this.map.on('moveend', this.onMoveend, this);
-        this.map.on('changelayer', this.onChangelayer, this);
-        this.map.on('addlayer', this.onAddlayer, this);
-        this.map.on('removelayer', this.onRemovelayer, this);
+        //this.map.getLayers().on('propertyChange', this.onChangelayer, this);
+        this.map.getLayers().on('add', this.onAddlayer, this);
+        this.map.getLayers().on('remove', this.onRemovelayer, this);
     },
 
     /**
@@ -372,7 +372,9 @@ Ext.define('GeoExt.panel.Map', {
      * @param {Object} e
      * @private
      */
-    onAddlayer: function() {
+    onAddlayer: function(e) {
+        var layer = e.element;
+        layer.on('change', this.onChangelayer, this);
         this.fireEvent("afterlayeradd");
     },
 
@@ -383,8 +385,10 @@ Ext.define('GeoExt.panel.Map', {
      * @param {Object} e
      * @private
      */
-    onRemovelayer: function() {
+    onRemovelayer: function(e) {
         this.fireEvent("afterlayerremove");
+        var layer = e.element;
+        layer.un('change', this.onChangelayer, this);
     },
 
     /**
@@ -422,10 +426,10 @@ Ext.define('GeoExt.panel.Map', {
      */
     setInitialExtent: function() {
         var map = this.map;
-        if (!map.getCenter()) {
+        if (!map.getView().getCenter()) {
             if (this.center || this.zoom ) {
                 // center and/or zoom?
-                map.setCenter(this.center, this.zoom);
+                map.getView().setCenter(this.center, this.zoom);
             } else if (this.extent instanceof Array) {
                 // extent
                 map.fitExtent(this.extent, this.map.getSize());

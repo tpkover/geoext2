@@ -39,6 +39,18 @@ Ext.define('GeoExt.data.LayerModel',{
     },
     fields: [
         'id',
+        { name: 'isBaseLayer', type: 'bool', convert: function(value, record) {
+            return record.data.get('isBaseLayer');
+        }},
+        { name: 'displayInLayerSwitcher', type: 'bool', convert: function(value, record) {
+           return record.data.get('displayInLayerSwitcher');
+        }},
+        { name: 'title', type: 'string', convert: function(value, record) {
+            return record.data.get('name');
+        }},
+        { name: 'name', type: 'string', convert: function(value, record) {
+            return record.data.get('name');
+        }},
         {name: 'title', type: 'string', mapping: 'name'},
         {name: 'legendURL', type: 'string', mapping: 'metadata.legendURL'},
         {name: 'hideTitle', type: 'bool', mapping: 'metadata.hideTitle'},

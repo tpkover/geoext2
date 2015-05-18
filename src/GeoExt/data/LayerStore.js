@@ -144,9 +144,9 @@ Ext.define('GeoExt.data.LayerStore', {
 			me.loadRawData(layers, true);
 		}
 
-		map.on("changelayer", me.onChangeLayer, me);
-		map.on("addlayer", me.onAddLayer, me);
-		map.on('removelayer', me.onRemoveLayer, me);
+		//map.getLayers().on("propertyChange", me.onChangeLayer, me);
+		map.getLayers().on("add", me.onAddLayer, me);
+		map.getLayers().on('remove', me.onRemoveLayer, me);
 
 		me.on({
 			"load": me.onLoad,
@@ -171,9 +171,9 @@ Ext.define('GeoExt.data.LayerStore', {
 
 		if (me.map) {
 
-			me.map.un('changelayer', me.onChangeLayer, me);
-			me.map.un('addlayer', me.onAddLayer, me);
-			me.map.un('removelayer', me.onRemoveLayer, me);
+			//me.map.getLayers().un('change', me.onChangeLayer, me);
+			me.map.getLayers().un('add', me.onAddLayer, me);
+			me.map.getLayers().un('remove', me.onRemoveLayer, me);
 
 			me.un("load", me.onLoad, me);
 			me.un("clear", me.onClear, me);
@@ -211,7 +211,7 @@ Ext.define('GeoExt.data.LayerStore', {
 	 * @private
 	 */
 	onChangeLayer: function (evt) {
-		var layer = evt.layer;
+		var layer = evt.element;
 		var recordIndex = this.findBy(function (rec, id) {
 			return rec.getLayer() === layer;
 		});
@@ -247,7 +247,7 @@ Ext.define('GeoExt.data.LayerStore', {
 		var me = this;
 		if (!me._adding) {
 			me._adding = true;
-			var result = me.proxy.reader.read(evt.layer);
+			var result = me.proxy.reader.read(evt.element);
 			me.add(result.records);
 			delete me._adding;
 		}
@@ -263,9 +263,11 @@ Ext.define('GeoExt.data.LayerStore', {
 		//TODO replace the check for undloadDestroy with a listener for the
 		// map's beforedestroy event, doing unbindMap(). This can be done as soon
 		// as http://trac.openlayers.org/ticket/2136 is fixed.
+		// TODO TK unloadDestroy is gone
+		/*
 		if (this.map.unloadDestroy) {
 			if (!this._removing) {
-				var layer = evt.layer,
+				var layer = evt.element,
 					rec = this.getByLayer(layer);
 				if (rec) {
 					this._removing = true;
@@ -276,6 +278,7 @@ Ext.define('GeoExt.data.LayerStore', {
 		} else {
 			this.unbindMap();
 		}
+		*/
 	},
 
 	/**

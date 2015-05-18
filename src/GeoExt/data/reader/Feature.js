@@ -49,16 +49,17 @@ Ext.define('GeoExt.data.reader.Feature', {
     /**
      *
      */
+       /*
     extractRecord: function(feature){
-        var featureState = feature && feature.state,
+        var
+            featureState = feature && feature.state,
             states = OpenLayers.State,
             // newly inserted features need to be made into phantom records
-            id = (featureState === states.INSERT) ? undefined : feature.id,
-            record;
+            id = (featureState === states.INSERT) ? undefined : feature.id;
 
         // call the parent which actually also modifies the given feature in
         // ExtJS 5
-        record = this.callParent(arguments);
+        var record = this.callParent(arguments);
 
         record.state = featureState;
         if (featureState === states.INSERT || featureState === states.UPDATE) {
@@ -75,13 +76,13 @@ Ext.define('GeoExt.data.reader.Feature', {
         // we have to store the state of 'dirty' so we can set it back after we
         // have set the id (TODO we might need to change this to instead not use
         // the setter at all)
-        var oldDirty = record.dirty
+        var oldDirty = record.dirty;
         record.setId(id);
         record.dirty = oldDirty;
 
         return record;
     },
-
+    */
     /**
      * Force to have our convertRecordData. Only needed for ExtJS 4
      *
@@ -131,15 +132,15 @@ Ext.define('GeoExt.data.reader.Feature', {
                     convertedValues[field.name] = v;
                 }
             }
-            record.state = feature.state;
-            if (feature.state == OpenLayers.State.INSERT ||
-                    feature.state == OpenLayers.State.UPDATE) {
-                record.setDirty();
-            }
+            //record.state = feature.state;
+            //if (feature.state == OpenLayers.State.INSERT ||
+            //        feature.state == OpenLayers.State.UPDATE) {
+            //    record.setDirty();
+            //}
 
             // newly inserted features need to be made into phantom records
-            var id = (feature.state === OpenLayers.State.INSERT) ? undefined : feature.id;
-            convertedValues['id'] = id;
+            //var id = (feature.state === OpenLayers.State.INSERT) ? undefined : feature.id;
+            //convertedValues['id'] = id;
         }
     }
 });

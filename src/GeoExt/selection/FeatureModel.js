@@ -115,12 +115,12 @@ Ext.define('GeoExt.selection.FeatureModel', {
      */
     constructor: function(config) {
         config = config || {};
-        if (config.selectControl instanceof OpenLayers.Control.SelectFeature) {
+        if (config.selectControl instanceof ol.Control.SelectFeature) {
             if (!config.singleSelect) {
                 var ctrl = config.selectControl;
                 config.singleSelect = !(ctrl.multiple || !!ctrl.multipleKey);
             }
-        } else if (config.layer instanceof OpenLayers.Layer.Vector) {
+        } else if (config.layer instanceof ol.layer.Vector) {
             this.selectControl = this.createSelectControl(
                     config.layer, config.selectControl);
             delete config.layer;
@@ -145,7 +145,7 @@ Ext.define('GeoExt.selection.FeatureModel', {
             var view = me.view || me.views[0],
                 viewStore = view.getStore(),
                 ctrl = me.selectControl,
-                isSelCtrl = (ctrl instanceof OpenLayers.Control.SelectFeature),
+                isSelCtrl = (ctrl instanceof ol.Control.SelectFeature),
                 layer;
 
             if (viewStore) {
@@ -177,7 +177,7 @@ Ext.define('GeoExt.selection.FeatureModel', {
             multipleKey: singleSelect ? null :
                 (Ext.isMac ? "metaKey" : "ctrlKey")
         }, config);
-        var selectControl = new OpenLayers.Control.SelectFeature(
+        var selectControl = new ol.Control.SelectFeature(
                 layer, config);
         layer.map.addControl(selectControl);
         return selectControl;
@@ -199,7 +199,7 @@ Ext.define('GeoExt.selection.FeatureModel', {
         if (!this.bound) {
             options = options || {};
             this.selectControl = obj;
-            if (obj instanceof OpenLayers.Layer.Vector) {
+            if (obj instanceof ol.layer.Vector) {
                 this.selectControl = this.createSelectControl(
                     obj, options.controlConfig
                 );
