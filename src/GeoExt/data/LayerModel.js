@@ -68,6 +68,6 @@ Ext.define('GeoExt.data.LayerModel',{
      * @return {ol.Layer}
      */
     getLayer: function() {
-        return this.raw;
+        return this.data;
     }
 });
